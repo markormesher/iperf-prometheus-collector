@@ -1,0 +1,10 @@
+# Generated code
+build/
+node_modules/
+
+# Logs
+yarn-*.log*
+
+# Linux
+*~
+.Trash-*

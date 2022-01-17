@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2018",
+    "moduleResolution": "node",
+    "outDir": "./build",
+    "alwaysStrict": true,
+    "baseUrl": "./",
+    "allowJs": true,
+    "removeComments": false,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "./src/server.ts"
+  ],
+  "exclude": [
+    "./node_modules"
+  ]
+}

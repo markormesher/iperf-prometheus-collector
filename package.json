@@ -1,0 +1,16 @@
+{
+  "name": "iperf-prometheus-collector",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.json",
+    "lint": "eslint --ext ts,tsx,js,jsx src",
+    "start": "node ./build/server.js"
+  },
+  "devDependencies": {
+    "@dragonlabs/eslint-config": "^0.0.11",
+    "@types/node": "^16.7.1",
+    "eslint": "^7.32.0",
+    "typescript": "^4.3.5"
+  }
+}
