@@ -4,17 +4,17 @@ A simple Prometheus collector to provide measurements about network connection t
 
 :rocket: Jump to [quick-start example](#quick-start-docker-compose-example).
 
-:whale: See releases on [Docker Hub](https://hub.docker.com/repository/docker/markormesher/iperf-prometheus-collector/tags).
+:whale: See releases on [ghcr.io](https://github.com/markormesher/iperf-prometheus-collector/pkgs/container/iperf-prometheus-collector).
 
 Note that `iperf` tests take 10+ seconds per target and are executed sequentially, so this collector runs asynchronously. Tests are run on a configurable interval and every request to the `/metrics` endpoint will return the most recent results. Emitted metrics are timestamped, so this approach does not result in out of date data being logged.
 
 ## Measurements
 
-| Measurement | Description | Labels
-| --- | --- | --- |
-| `iperf_sent_bytes` | Total number of bytes sent during the test. | `target` |
-| `iperf_sent_seconds` | Duration of the test on the sending side, in seconds. | `target` |
-| `iperf_received_bytes` | Total number of bytes received during the test. | `target` |
+| Measurement              | Description                                             | Labels   |
+| ------------------------ | ------------------------------------------------------- | -------- |
+| `iperf_sent_bytes`       | Total number of bytes sent during the test.             | `target` |
+| `iperf_sent_seconds`     | Duration of the test on the sending side, in seconds.   | `target` |
+| `iperf_received_bytes`   | Total number of bytes received during the test.         | `target` |
 | `iperf_received_seconds` | Duration of the test on the receiving side, in seconds. | `target` |
 
 These metrics can be combined to show the throughput in bps with the following example Prometheus query:
@@ -27,10 +27,10 @@ avg by (target) (iperf_received_bytes / iperf_received_seconds * 8)
 
 Configuration is via the following environment variables:
 
-| Variable | Required? | Description | Default
-| --- | --- | --- | --- |
-| `TARGET_LIST` | yes | Comma separated list of host names or IP addresses to run tests against. | n/a |
-| `TEST_INTERVAL_MS` | no | How often to run iperf tests. | 600000ms (= 10 minutes) |
+| Variable           | Required? | Description                                                              | Default                 |
+| ------------------ | --------- | ------------------------------------------------------------------------ | ----------------------- |
+| `TARGET_LIST`      | yes       | Comma separated list of host names or IP addresses to run tests against. | n/a                     |
+| `TEST_INTERVAL_MS` | no        | How often to run iperf tests.                                            | 600000ms (= 10 minutes) |
 
 ### `iperf` Server
 
@@ -45,7 +45,7 @@ version: "3.8"
 
 services:
   iperf-prometheus-collector:
-    build: markormesher/iperf-prometheus-collector
+    image: ghcr.io/markormesher/iperf-prometheus-collector:VERSION
     restart: unless-stopped
     environment:
       - TARGET_LIST=my-host-01,my-host-02,12.34.56.78
