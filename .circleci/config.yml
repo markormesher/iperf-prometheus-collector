@@ -13,7 +13,7 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            docker build . -t ghcr.io/markormesher/iperf-prometheus-collector/iperf-prometheus-collector:$(git describe)
+            docker build . -t ghcr.io/markormesher/iperf-prometheus-collector:$(git describe)
             docker image ls
       - run:
           name: Maybe publish
@@ -21,7 +21,7 @@ jobs:
             # publish tagged commits only
             if ! git describe --exact-match HEAD > /dev/null 2>&1; then echo "Not on tagged commit - nothing to do"; exit 0; fi
             echo "${GHCR_PUBLISH_TOKEN}" | docker login ghcr.io -u markormesher --password-stdin
-            docker publish ghcr.io/markormesher/iperf-prometheus-collector:$(git describe)
+            docker push ghcr.io/markormesher/iperf-prometheus-collector:$(git describe)
 
 workflows:
   version: 2
