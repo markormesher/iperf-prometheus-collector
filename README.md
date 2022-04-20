@@ -6,7 +6,7 @@ A simple Prometheus collector to provide measurements about network connection t
 
 :rocket: Jump to [quick-start example](#quick-start-docker-compose-example).
 
-:whale: See releases on [ghcr.io](https://github.com/markormesher/iperf-prometheus-collector/pkgs/container/iperf-prometheus-collector).
+:whale: See releases on [ghcr.io](https://ghcr.io/markormesher/iperf-prometheus-collector).
 
 Note that `iperf` tests take 10+ seconds per target and are executed sequentially, so this collector runs asynchronously. Tests are run on a configurable interval and every request to the `/metrics` endpoint will return the most recent results. Emitted metrics are timestamped, so this approach does not result in out of date data being logged.
 
