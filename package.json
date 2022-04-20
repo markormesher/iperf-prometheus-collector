@@ -1,6 +1,6 @@
 {
   "name": "iperf-prometheus-collector",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "license": "MIT",
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
