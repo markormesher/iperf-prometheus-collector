@@ -1,3 +1,5 @@
+![CircleCI](https://img.shields.io/circleci/build/github/markormesher/iperf-prometheus-collector)
+
 # `iperf` Prometheus Collector
 
 A simple Prometheus collector to provide measurements about network connection throughput for multiple hosts using the [iperf3](https://iperf.fr/) utility.
