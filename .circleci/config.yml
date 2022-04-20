@@ -12,13 +12,13 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-{{ .Branch }}
-            - v1-
+            - yarn-v1-{{ .Branch }}
+            - yarn-v1
       - run:
           name: Install dependencies
           command: yarn install
       - save_cache:
-          key: v1-{{ .Branch }}
+          key: yarn-v1-{{ .Branch }}-{{ epoch }}
           paths:
             - node_modules
       - persist_to_workspace:
@@ -36,35 +36,45 @@ jobs:
           command: |
             yarn lint
 
-  build:
+  build-publish:
     <<: *defaults
     steps:
       - attach_workspace:
           at: .
       - setup_remote_docker:
-          docker_layer_caching: true
           version: 20.10.12
+      - restore_cache:
+          keys:
+            - docker-v1-{{ .Branch }}
+            - docker-v1
+      - run:
+          name: Load Docker cache
+          command: |
+            docker load -i ~/cache/docker.tar || true
       - run:
           name: Build Docker image
           command: |
-            docker build . -t ghcr.io/markormesher/iperf-prometheus-collector:$(git describe)
+            docker build --cache-from=cache -t ghcr.io/markormesher/iperf-prometheus-collector:$(git describe) .
             docker image ls
-
-  maybe-publish:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: .
-      - setup_remote_docker:
-          docker_layer_caching: true
-          version: 20.10.12
       - run:
-          name: Maybe publish
+          name: Maybe publish Docker image
           command: |
             # publish tagged commits only
             if ! git describe --exact-match HEAD > /dev/null 2>&1; then echo "Not on tagged commit - nothing to do"; exit 0; fi
             echo "${GHCR_PUBLISH_TOKEN}" | docker login ghcr.io -u markormesher --password-stdin
             docker push ghcr.io/markormesher/iperf-prometheus-collector:$(git describe)
+      - run:
+          name: Create Docker cache
+          command: |
+            rm -rf ~/cache
+            mkdir ~/cache
+            docker tag ghcr.io/markormesher/iperf-prometheus-collector:$(git describe) cache
+            docker save -o ~/cache/docker.tar cache
+            ls -lh ~/cache/docker.tar
+      - save_cache:
+          key: docker-v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - ~/cache
 
 workflows:
   version: 2
@@ -74,10 +84,6 @@ workflows:
       - lint:
           requires:
             - setup
-      - build:
-          requires:
-            - setup
-      - maybe-publish:
+      - build-publish:
           requires:
             - lint
-            - build
