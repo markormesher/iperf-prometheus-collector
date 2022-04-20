@@ -1,4 +1,4 @@
-FROM node:fermium
+FROM node:16.14.2
 
 RUN apt update \
   && apt install -y iperf3 \
