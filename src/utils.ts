@@ -14,4 +14,8 @@ function formatMeasurement(name: string, tags: { [key: string]: string }, value:
   return measurement;
 }
 
-export { formatMeasurement };
+function log(msg: string, ...args: unknown[]): void {
+  console.log(`[${new Date().toISOString()}] ${msg}`, ...args);
+}
+
+export { formatMeasurement, log };

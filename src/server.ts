@@ -2,7 +2,7 @@ import * as http from "http";
 import * as util from "util";
 import { exec as execRaw } from "child_process";
 import { ConfigKey, getConfig } from "./config";
-import { formatMeasurement } from "./utils";
+import { formatMeasurement, log } from "./utils";
 
 const exec = util.promisify(execRaw);
 
@@ -23,8 +23,7 @@ async function getMeasurements(): Promise<string[]> {
       const iperfCmd = await exec(`iperf3 -c ${target} --json`);
       const result = JSON.parse(iperfCmd.stdout);
       if (result["error"]) {
-        console.log(`iperf error: ${result["error"]}`);
-        throw "";
+        throw result["error"];
       }
 
       measurements.push(formatMeasurement("iperf_sent_bytes", tags, parseFloat(result["end"]["sum_sent"]["bytes"])));
@@ -37,8 +36,8 @@ async function getMeasurements(): Promise<string[]> {
       measurements.push(
         formatMeasurement("iperf_received_seconds", tags, parseFloat(result["end"]["sum_received"]["seconds"])),
       );
-    } catch {
-      console.log(`Could not get iperf metrics for ${target}`);
+    } catch (e) {
+      log(`Could not get iperf metrics for ${target}`, e);
       continue;
     }
   }
@@ -50,10 +49,10 @@ async function getMeasurements(): Promise<string[]> {
 let latestMeasurements = [];
 setInterval(async () => {
   try {
-    console.log("Refreshing metrics...");
+    log("Refreshing metrics...");
     latestMeasurements = await getMeasurements();
   } catch (err) {
-    console.log("Failed to get measurements", err);
+    log("Failed to get measurements", err);
     latestMeasurements = null;
   }
 }, testIntervalMs);
@@ -75,12 +74,12 @@ const server = http.createServer((req, res) => {
   }
 });
 
-server.listen(9030, () => console.log("Server listening on HTTP/9030"));
+server.listen(9030, () => log("Server listening on HTTP/9030"));
 
 process.on("SIGTERM", () => {
-  console.log("Closing server connection");
+  log("Closing server connection");
   server.close(() => {
-    console.log("Exiting process");
+    log("Exiting process");
     process.exit(0);
   });
 });
