@@ -31,10 +31,10 @@
     core-js "^2.6.5"
     regenerator-runtime "^0.13.4"
 
-"@dragonlabs/eslint-config@^0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@dragonlabs/eslint-config/-/eslint-config-0.0.13.tgz#04d9b8bb1e03517f81db7b9f790307d470c5938f"
-  integrity sha512-DRmmHCX5XO15aT8FsQb4Qas78EXg69RcFQVfKI48EFT1BEgtBMIonDmrRv3Xei7bPxwcnOkkgbsomghFW7mFLQ==
+"@dragonlabs/eslint-config@^1.0.0":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@dragonlabs/eslint-config/-/eslint-config-1.0.1.tgz#6173f804646b867cbfb693efd583a89103b05aef"
+  integrity sha512-qjmLDdrHHG4bVZXkvegDqE7yIVfG6CG1lOhBdzbFH9xXaEnphKbwZni/zPCLppchg92TQOooAYb0T4bixQcSlQ==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
