@@ -15,7 +15,7 @@
     "eslint": "^7.0.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.24.0",
     "install-peerdeps": "^3.0.3",
     "prettier": "^2.3.2",
