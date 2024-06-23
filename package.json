@@ -18,7 +18,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "install-peerdeps": "^3.0.3",
-    "prettier": "^2.3.2",
+    "prettier": "^3.0.0",
     "typescript": "<4.5.0"
   }
 }
