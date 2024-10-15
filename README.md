@@ -29,10 +29,11 @@ avg by (target) (iperf_received_bytes / iperf_received_seconds * 8)
 
 Configuration is via the following environment variables:
 
-| Variable           | Required? | Description                                                              | Default                 |
-| ------------------ | --------- | ------------------------------------------------------------------------ | ----------------------- |
-| `TARGET_LIST`      | yes       | Comma separated list of host names or IP addresses to run tests against. | n/a                     |
-| `TEST_INTERVAL_MS` | no        | How often to run iperf tests.                                            | 600000ms (= 10 minutes) |
+| Variable           | Required? | Description                                                                                                    | Default                 |
+|--------------------|-----------|----------------------------------------------------------------------------------------------------------------|-------------------------|
+| `TARGET_LIST`      | yes       | Comma separated list of host names or IP addresses to run tests against.                                       | n/a                     |
+| `TEST_INTERVAL_MS` | no        | How often to run iperf tests.                                                                                  | 600000ms (= 10 minutes) |
+| `OPTIONS`          | no        | Additional [iperf options](https://github.com/esnet/iperf/blob/master/docs/invoking.rst) (e.g. `--bitrate 1k`) | none                    |
 
 ### `iperf` Server
 

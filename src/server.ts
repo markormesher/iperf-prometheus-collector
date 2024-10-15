@@ -8,6 +8,7 @@ const exec = util.promisify(execRaw);
 
 // get config
 const targetList = getConfig(ConfigKey.TargetList);
+const options = getConfig(ConfigKey.Options);
 const targets = targetList.split(",").map((t) => t.trim());
 const testIntervalMs = parseInt(getConfig(ConfigKey.TestIntervalMs, "600000"));
 
@@ -17,10 +18,11 @@ async function getMeasurements(): Promise<string[]> {
   for (const target of targets) {
     const tags = {
       target,
+      options,
     };
 
     try {
-      const iperfCmd = await exec(`iperf3 -c ${target} --json`);
+      const iperfCmd = await exec(`iperf3 -c ${target} --json ${options}`);
       const result = JSON.parse(iperfCmd.stdout);
       if (result["error"]) {
         throw result["error"];
