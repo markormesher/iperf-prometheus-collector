@@ -2,7 +2,9 @@ import { readFileSync } from "fs";
 
 enum ConfigKey {
   TargetList = "TARGET_LIST",
+  Options = "OPTIONS",
   TestIntervalMs = "TEST_INTERVAL_MS",
+  Protocol = "PROTOCOL",
 }
 
 const loadedConfig: Partial<{ [key in ConfigKey]: string }> = {};

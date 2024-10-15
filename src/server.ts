@@ -8,6 +8,8 @@ const exec = util.promisify(execRaw);
 
 // get config
 const targetList = getConfig(ConfigKey.TargetList);
+const options = getConfig(ConfigKey.Options);
+const protocol = getConfig(ConfigKey.Protocol, "tcp");
 const targets = targetList.split(",").map((t) => t.trim());
 const testIntervalMs = parseInt(getConfig(ConfigKey.TestIntervalMs, "600000"));
 
@@ -17,25 +19,47 @@ async function getMeasurements(): Promise<string[]> {
   for (const target of targets) {
     const tags = {
       target,
+      options,
     };
 
     try {
-      const iperfCmd = await exec(`iperf3 -c ${target} --json`);
+      let udpOptionStr = "";
+      if (protocol == "udp") {
+        udpOptionStr = "--udp";
+      }
+
+      const iperfCmd = await exec(`iperf3 -c ${target} ${udpOptionStr} --json ${options}`);
       const result = JSON.parse(iperfCmd.stdout);
       if (result["error"]) {
         throw result["error"];
       }
-
-      measurements.push(formatMeasurement("iperf_sent_bytes", tags, parseFloat(result["end"]["sum_sent"]["bytes"])));
-      measurements.push(
-        formatMeasurement("iperf_sent_seconds", tags, parseFloat(result["end"]["sum_sent"]["seconds"])),
-      );
-      measurements.push(
-        formatMeasurement("iperf_received_bytes", tags, parseFloat(result["end"]["sum_received"]["bytes"])),
-      );
-      measurements.push(
-        formatMeasurement("iperf_received_seconds", tags, parseFloat(result["end"]["sum_received"]["seconds"])),
-      );
+      switch(protocol) {
+        case "tcp":
+          measurements.push(formatMeasurement("iperf_sent_bytes", tags, parseFloat(result["end"]["sum_sent"]["bytes"])));
+          measurements.push(
+              formatMeasurement("iperf_sent_seconds", tags, parseFloat(result["end"]["sum_sent"]["seconds"])),
+          );
+          measurements.push(
+              formatMeasurement("iperf_received_bytes", tags, parseFloat(result["end"]["sum_received"]["bytes"])),
+          );
+          measurements.push(
+              formatMeasurement("iperf_received_seconds", tags, parseFloat(result["end"]["sum_received"]["seconds"])),
+          );
+          break;
+        case "udp":
+          measurements.push(
+              formatMeasurement("iperf_lost_packets", tags, parseFloat(result["end"]["sum"]["lost_packets"])),
+          );
+          measurements.push(
+              formatMeasurement("iperf_received_bytes", tags, parseFloat(result["end"]["sum"]["bytes"])),
+          );
+          measurements.push(
+              formatMeasurement("iperf_received_seconds", tags, parseFloat(result["end"]["sum"]["seconds"])),
+          );
+          break;
+        default:
+          throw `unsupported protocol ${protocol}`;
+      }
     } catch (e) {
       log(`Could not get iperf metrics for ${target}`, e);
       continue;
