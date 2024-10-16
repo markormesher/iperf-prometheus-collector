@@ -7,16 +7,16 @@ enum ConfigKey {
 
 const loadedConfig: Partial<{ [key in ConfigKey]: string }> = {};
 
-function getConfig(key: ConfigKey, defaultVal?: string): string {
+function getConfig(key: ConfigKey, defaultVal: string): string {
   if (!loadedConfig[key]) {
     loadedConfig[key] = getConfigNoCache(key);
   }
-  return loadedConfig[key] || defaultVal;
+  return loadedConfig[key] ?? defaultVal;
 }
 
-function getConfigNoCache(key: ConfigKey): string {
+function getConfigNoCache(key: ConfigKey): string | undefined {
   if (process.env[key + "_FILE"]) {
-    return readFileSync(process.env[key + "_FILE"])
+    return readFileSync(process.env[key + "_FILE"] ?? "")
       .toString()
       .trim();
   } else if (process.env[key]) {

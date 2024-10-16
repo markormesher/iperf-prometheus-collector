@@ -1,6 +1,18 @@
-.dockerignore
-.git/
-.gitignore
+# Dependencies
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Generated code
 build/
-node_modules/
-.circleci/
+
+# Logs
+yarn-*.log*
+
+# Linux
+*~
+.Trash-*

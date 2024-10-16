@@ -1,14 +1,18 @@
 import * as http from "http";
 import * as util from "util";
 import { exec as execRaw } from "child_process";
-import { ConfigKey, getConfig } from "./config";
-import { formatMeasurement, log } from "./utils";
+import { ConfigKey, getConfig } from "./config.js";
+import { formatMeasurement, log } from "./utils.js";
+import { IperfTcpOutput } from "./iperf.js";
 
 const exec = util.promisify(execRaw);
 
 // get config
-const targetList = getConfig(ConfigKey.TargetList);
-const targets = targetList.split(",").map((t) => t.trim());
+const targetList = getConfig(ConfigKey.TargetList, "");
+const targets = targetList
+  .split(",")
+  .map((t) => t.trim())
+  .filter((t) => t.length > 0);
 const testIntervalMs = parseInt(getConfig(ConfigKey.TestIntervalMs, "600000"));
 
 async function getMeasurements(): Promise<string[]> {
@@ -21,21 +25,15 @@ async function getMeasurements(): Promise<string[]> {
 
     try {
       const iperfCmd = await exec(`iperf3 -c ${target} --json`);
-      const result = JSON.parse(iperfCmd.stdout);
-      if (result["error"]) {
-        throw result["error"];
+      const result = JSON.parse(iperfCmd.stdout) as IperfTcpOutput;
+      if (result.error) {
+        throw result.error;
       }
 
-      measurements.push(formatMeasurement("iperf_sent_bytes", tags, parseFloat(result["end"]["sum_sent"]["bytes"])));
-      measurements.push(
-        formatMeasurement("iperf_sent_seconds", tags, parseFloat(result["end"]["sum_sent"]["seconds"])),
-      );
-      measurements.push(
-        formatMeasurement("iperf_received_bytes", tags, parseFloat(result["end"]["sum_received"]["bytes"])),
-      );
-      measurements.push(
-        formatMeasurement("iperf_received_seconds", tags, parseFloat(result["end"]["sum_received"]["seconds"])),
-      );
+      measurements.push(formatMeasurement("iperf_sent_bytes", tags, parseFloat(result.end.sum_sent.bytes)));
+      measurements.push(formatMeasurement("iperf_sent_seconds", tags, parseFloat(result.end.sum_sent.seconds)));
+      measurements.push(formatMeasurement("iperf_received_bytes", tags, parseFloat(result.end.sum_received.bytes)));
+      measurements.push(formatMeasurement("iperf_received_seconds", tags, parseFloat(result.end.sum_received.seconds)));
     } catch (e) {
       log(`Could not get iperf metrics for ${target}`, e);
       continue;
@@ -46,14 +44,16 @@ async function getMeasurements(): Promise<string[]> {
 }
 
 // string array of metrics, or null if collection is failing
-let latestMeasurements = [];
+let latestMeasurements: string[] = [];
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 setInterval(async () => {
   try {
     log("Refreshing metrics...");
     latestMeasurements = await getMeasurements();
   } catch (err) {
     log("Failed to get measurements", err);
-    latestMeasurements = null;
+    latestMeasurements = [];
   }
 }, testIntervalMs);
 

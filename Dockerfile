@@ -1,26 +1,29 @@
-FROM node:16.20.2-alpine@sha256:a1f9d027912b58a7c75be7716c97cfbc6d3099f3a97ed84aa490be9dee20e787 AS builder
+FROM node:21.7.3-bookworm@sha256:4b232062fa976e3a966c49e9b6279efa56c8d207a67270868f51b3d155c4e33d AS builder
+WORKDIR /app
 
-WORKDIR /iperf-prometheus-collector
-
-COPY ./package.json ./yarn.lock ./
+COPY .yarn/ .yarn/
+COPY package.json yarn.lock .yarnrc.yml ./
 RUN yarn install
 
+COPY ./src ./src
 COPY ./tsconfig.json ./
-COPY ./src ./src/
+
 RUN yarn build
 
 # ---
 
-FROM node:16.20.2-alpine@sha256:a1f9d027912b58a7c75be7716c97cfbc6d3099f3a97ed84aa490be9dee20e787
+FROM node:21.7.3-bookworm@sha256:4b232062fa976e3a966c49e9b6279efa56c8d207a67270868f51b3d155c4e33d
+WORKDIR /app
 
-WORKDIR /iperf-prometheus-collector
+RUN apt update && apt install -y --no-install-recommends iperf3
 
-RUN apk add --no-cache iperf3
+COPY .yarn/ .yarn/
+COPY package.json yarn.lock .yarnrc.yml ./
+RUN yarn workspaces focus --all --production
 
-COPY ./package.json ./yarn.lock ./
-RUN yarn install --production
-
-COPY --from=builder /iperf-prometheus-collector/build ./build/
+COPY --from=builder /app/build /app/build
 
 EXPOSE 9030
+
+USER nobody
 CMD yarn start

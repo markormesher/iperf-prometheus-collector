@@ -1,4 +1,4 @@
-function formatMeasurement(name: string, tags: { [key: string]: string }, value: number): string {
+function formatMeasurement(name: string, tags: Record<string, string>, value: number): string {
   let tagStr = "";
   for (const [tagKey, tagVal] of Object.entries(tags)) {
     if (tagStr.length > 0) {
