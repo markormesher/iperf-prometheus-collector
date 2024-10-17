@@ -15,7 +15,9 @@ RUN yarn build
 FROM node:21.7.3-bookworm@sha256:4b232062fa976e3a966c49e9b6279efa56c8d207a67270868f51b3d155c4e33d
 WORKDIR /app
 
-RUN apt update && apt install -y --no-install-recommends iperf3
+RUN apt update \
+  && apt install -y --no-install-recommends iperf3 \
+  && rm -rf /var/lib/apt/lists
 
 COPY .yarn/ .yarn/
 COPY package.json yarn.lock .yarnrc.yml ./
