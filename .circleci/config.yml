@@ -1,0 +1,99 @@
+version: 2.1
+
+defaults: &defaults
+  working_directory: /tmp/app
+  docker:
+    - image: cimg/go:1.22.3
+
+jobs:
+  setup:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ .Branch }}
+            - go-mod-v1
+      - run:
+          name: Download dependencies
+          command: go mod vendor
+      - save_cache:
+          key: go-mod-v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - vendor
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Lint
+          command: |
+            bad_files=$(gofmt -l . | (grep -v ^vendor/ || :))
+            if [[ "${bad_files}" != "" ]]; then
+              echo "Lint failed on the following files:"
+              echo ${bad_files}
+              exit 1
+            fi
+
+  build:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build
+          command: |
+            go build -mod vendor -o ./build/ ./cmd/*
+
+  publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build container image
+          command: |
+            docker build /tmp/app -f Containerfile -t ghcr.io/markormesher/${CIRCLE_PROJECT_REPONAME}:$(git describe --tags)
+            docker image ls
+      - run:
+          name: Maybe publish container image
+          command: |
+            if ! git describe --exact-match HEAD > /dev/null 2>&1; then echo "Not on tagged commit - nothing to do"; exit 0; fi
+            echo "${GHCR_PUBLISH_TOKEN}" | docker login ghcr.io -u markormesher --password-stdin
+            docker push ghcr.io/markormesher/${CIRCLE_PROJECT_REPONAME}:$(git describe --tags)
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - setup:
+          filters:
+            tags:
+              only: /.*/
+      - lint:
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+      - build:
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+      - publish:
+          requires:
+            - lint
+            - build
+          filters:
+            tags:
+              only: /.*/
