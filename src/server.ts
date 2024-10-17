@@ -13,6 +13,15 @@ const protocol = getConfig(ConfigKey.Protocol, "tcp");
 const targets = targetList.split(",").map((t) => t.trim());
 const testIntervalMs = parseInt(getConfig(ConfigKey.TestIntervalMs, "600000"));
 
+switch(protocol) {
+  case "tcp":
+  case "udp":
+    break;
+  default:
+    log(`unsupported protocol ${protocol} only udp and tcp are supported`);
+    throw `unsupported protocol ${protocol} only udp and tcp are supported`;
+}
+
 async function getMeasurements(): Promise<string[]> {
   const measurements: string[] = [];
 
@@ -57,8 +66,6 @@ async function getMeasurements(): Promise<string[]> {
               formatMeasurement("iperf_received_seconds", tags, parseFloat(result["end"]["sum"]["seconds"])),
           );
           break;
-        default:
-          throw `unsupported protocol ${protocol}`;
       }
     } catch (e) {
       log(`Could not get iperf metrics for ${target}`, e);
