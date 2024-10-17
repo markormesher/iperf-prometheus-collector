@@ -12,12 +12,12 @@ Note that `iperf` tests take 10+ seconds per target and are executed sequentiall
 
 ## Measurements
 
-| Measurement              | Description                                             | Labels   |
-| ------------------------ | ------------------------------------------------------- | -------- |
-| `iperf_sent_bytes`       | Total number of bytes sent during the test.             | `target` |
-| `iperf_sent_seconds`     | Duration of the test on the sending side, in seconds.   | `target` |
-| `iperf_received_bytes`   | Total number of bytes received during the test.         | `target` |
-| `iperf_received_seconds` | Duration of the test on the receiving side, in seconds. | `target` |
+| Measurement              | Description                                             | Labels              |
+|--------------------------|---------------------------------------------------------|---------------------|
+| `iperf_sent_bytes`       | Total number of bytes sent during the test.             | `target`, `options` |
+| `iperf_sent_seconds`     | Duration of the test on the sending side, in seconds.   | `target`, `options` |
+| `iperf_received_bytes`   | Total number of bytes received during the test.         | `target`, `options` |
+| `iperf_received_seconds` | Duration of the test on the receiving side, in seconds. | `target`, `options` |
 
 These metrics can be combined to show the throughput in bps with the following example Prometheus query:
 
