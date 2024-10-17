@@ -11,7 +11,7 @@
   "devDependencies": {
     "@markormesher/eslint-config": "^0.0.4",
     "@types/node": "^22.7.5",
-    "eslint": "^8.0.0",
+    "eslint": "^9.0.0",
     "typescript": "^5.6.3"
   },
   "packageManager": "yarn@4.5.0"
