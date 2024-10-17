@@ -3,7 +3,7 @@ version: 2
 defaults: &defaults
   working_directory: ~/app
   docker:
-    - image: cimg/node:17.9.1
+    - image: cimg/node:22.9.0
 
 jobs:
   setup:
@@ -12,15 +12,16 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - yarn-v1-{{ .Branch }}
-            - yarn-v1
+            - yarn-v2-{{ .Branch }}
+            - yarn-v2
       - run:
           name: Install dependencies
           command: yarn install
       - save_cache:
-          key: yarn-v1-{{ .Branch }}-{{ epoch }}
+          key: yarn-v2-{{ .Branch }}-{{ epoch }}
           paths:
-            - node_modules
+            - .yarn/cache
+            - .yarn/unplugged
       - persist_to_workspace:
           root: .
           paths:
@@ -41,8 +42,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - setup_remote_docker:
-          version: 20.10.12
+      - setup_remote_docker
       - restore_cache:
           keys:
             - docker-v1-{{ .Branch }}
