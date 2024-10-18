@@ -2,12 +2,12 @@ version: 2.1
 
 defaults: &defaults
   working_directory: /tmp/app
-  docker:
-    - image: cimg/go:1.22.3
 
 jobs:
   setup:
     <<: *defaults
+    docker:
+      - image: cimg/go:1.22.3
     steps:
       - checkout
       - run:
@@ -37,6 +37,8 @@ jobs:
 
   lint:
     <<: *defaults
+    docker:
+      - image: cimg/go:1.22.3
     steps:
       - attach_workspace:
           at: .
@@ -46,6 +48,8 @@ jobs:
 
   build:
     <<: *defaults
+    docker:
+      - image: cimg/go:1.22.3
     steps:
       - attach_workspace:
           at: .
