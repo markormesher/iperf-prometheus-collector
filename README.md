@@ -14,7 +14,7 @@ Note that `iperf` tests take 10+ seconds per target and are executed sequentiall
 
 | Measurement                   | Description                                                        | Labels          |
 | ----------------------------- | ------------------------------------------------------------------ | --------------- |
-| `iperf_tests_started`         | Number of tests that this collector has started.                   | none            |
+| `iperf_tests_started`         | Number of tests that been started.                                 | none            |
 | `iperf_tests_finished`        | Number of tests that have finished successfully.                   | none            |
 | `iperf_tests_failed`          | Number of tests that have failed.                                  | none            |
 | `iperf_sent_bytes`            | Number of bytes sent during the test.                              | target, options |
