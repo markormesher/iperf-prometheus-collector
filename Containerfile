@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.22.3@sha256:f43c6f049f04cbbaeb28f0aad3eea15274a7d0a7899a617d0037aec48d7ab010 as builder
+FROM docker.io/golang:1.23.2@sha256:cc637ce72c1db9586bd461cc5882df5a1c06232fd5dfe211d3b32f79c5a999fc as builder
 WORKDIR /app
 
 COPY go.mod Makefile ./
@@ -8,7 +8,7 @@ RUN make build
 
 # ---
 
-FROM docker.io/golang:1.22.3-alpine
+FROM docker.io/golang:1.23.2-alpine@sha256:9dd2625a1ff2859b8d8b01d8f7822c0f528942fe56cfe7a1e7c38d3b8d72d679
 WORKDIR /app
 
 RUN apk add --no-cache iperf3
