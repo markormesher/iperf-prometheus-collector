@@ -2,23 +2,14 @@ version: 2.1
 
 defaults: &defaults
   working_directory: /tmp/app
+  docker:
+    - image: cimg/go:1.22.3
 
 jobs:
   setup:
     <<: *defaults
-    docker:
-      - image: cimg/go:1.22.3
     steps:
       - checkout
-      - run:
-          name: Set container destination
-          command: |
-            touch .destination
-            if git describe --exact-match HEAD > /dev/null 2>&1; then
-              echo "--destination ghcr.io/markormesher/${CIRCLE_PROJECT_REPONAME}:$(git describe --tags)" | tee .destination
-            else
-              echo "--no-push" | tee .destination
-            fi
       - restore_cache:
           keys:
             - go-mod-v1-{{ .Branch }}
@@ -37,8 +28,6 @@ jobs:
 
   lint:
     <<: *defaults
-    docker:
-      - image: cimg/go:1.22.3
     steps:
       - attach_workspace:
           at: .
@@ -48,8 +37,6 @@ jobs:
 
   build:
     <<: *defaults
-    docker:
-      - image: cimg/go:1.22.3
     steps:
       - attach_workspace:
           at: .
@@ -59,23 +46,25 @@ jobs:
 
   publish:
     <<: *defaults
-    docker:
-      - image: gcr.io/kaniko-project/executor:v1.23.1-debug
-        entrypoint: ""
     steps:
       - attach_workspace:
           at: .
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: Build container image
           command: |
-            AUTH=$(echo -n "markormesher:${GHCR_PUBLISH_TOKEN}" | base64)
-            echo '{"auths":{"ghcr.io":{"auth":"'${AUTH}'"}}}' > /kaniko/.docker/config.json
-            /kaniko/executor \
-              --verbosity debug \
-              --context dir:///tmp/app \
-              --ignore-path /tmp/app \
-              --dockerfile /tmp/app/Containerfile \
-              $(cat .destination)
+            docker build /tmp/app -f Containerfile -t ghcr.io/markormesher/${CIRCLE_PROJECT_REPONAME}:$(git describe --tags)
+            docker image ls
+      - run:
+          name: Maybe publish container image
+          command: |
+            if ! git describe --exact-match HEAD > /dev/null 2>&1; then
+              echo "Not on tagged commit - nothing to do"
+              exit 0
+            fi
+            echo "${GHCR_PUBLISH_TOKEN}" | docker login ghcr.io -u markormesher --password-stdin
+            docker push ghcr.io/markormesher/${CIRCLE_PROJECT_REPONAME}:$(git describe --tags)
 
 workflows:
   version: 2
