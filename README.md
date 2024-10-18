@@ -12,25 +12,7 @@ Note that `iperf` tests take 10+ seconds per target and are executed sequentiall
 
 ## Measurements
 
-| Measurement                   | Description                                                        | Labels          |
-| ----------------------------- | ------------------------------------------------------------------ | --------------- |
-| `iperf_tests_started`         | Number of tests that been started.                                 | none            |
-| `iperf_tests_finished`        | Number of tests that have finished successfully.                   | none            |
-| `iperf_tests_failed`          | Number of tests that have failed.                                  | none            |
-| `iperf_sent_bytes`            | Number of bytes sent during the test.                              | target, options |
-| `iperf_sent_packets`          | Number of packets sent during the test (UDP only).                 | target, options |
-| `iperf_sent_lost_packets`     | Number of packet lost during the test (UDP only).                  | target, options |
-| `iperf_sent_seconds`          | Duration of the test on the sending side, in seconds.              | target, options |
-| `iperf_received_bytes`        | Number of bytes received during the test.                          | target, options |
-| `iperf_received_packets`      | Number of packets received during the test (UDP only).             | target, options |
-| `iperf_received_lost_packets` | Number of packets lost by the receiver during the test (UDP only). | target, options |
-| `iperf_received_seconds`      | Duration of the test on the receiving side, in seconds.            | target, options |
-
-These metrics can be combined to show the throughput in bps with the following example Prometheus query:
-
-```
-avg by (target) (iperf_received_bytes / iperf_received_seconds * 8)
-```
+See [`cmd/metric.go`](./cmd/metric.go).
 
 ## Configuration
 
