@@ -10,6 +10,7 @@ import (
 type Settings struct {
 	TargetList       []string
 	UpdateIntervalMs int
+	Protocol         string
 }
 
 func getSettings() (*Settings, error) {
@@ -17,7 +18,7 @@ func getSettings() (*Settings, error) {
 	targetList := strings.Split(targetListRaw, ",")
 
 	updateIntervalMsStr := os.Getenv("UPDATE_INTERVAL_MS")
-	if len(updateIntervalMsStr) == 0 {
+	if updateIntervalMsStr == "" {
 		updateIntervalMsStr = "600000"
 	}
 	updateIntervalMs, err := strconv.Atoi(updateIntervalMsStr)
@@ -25,8 +26,17 @@ func getSettings() (*Settings, error) {
 		return nil, fmt.Errorf("Could not parse update interval as an integer: %w", err)
 	}
 
+	protocol := os.Getenv("PROTOCOL")
+	if protocol == "" {
+		protocol = "tcp"
+	}
+	if protocol != "tcp" && protocol != "udp" {
+		return nil, fmt.Errorf("Invalid protocol: %s", protocol)
+	}
+
 	return &Settings{
 		TargetList:       targetList,
 		UpdateIntervalMs: updateIntervalMs,
+		Protocol:         protocol,
 	}, nil
 }
