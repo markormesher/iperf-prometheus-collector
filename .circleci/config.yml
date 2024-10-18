@@ -33,13 +33,7 @@ jobs:
           at: .
       - run:
           name: Lint
-          command: |
-            bad_files=$(gofmt -l . | (grep -v ^vendor/ || :))
-            if [[ "${bad_files}" != "" ]]; then
-              echo "Lint failed on the following files:"
-              echo ${bad_files}
-              exit 1
-            fi
+          command: make lint
 
   build:
     <<: *defaults
@@ -48,8 +42,7 @@ jobs:
           at: .
       - run:
           name: Build
-          command: |
-            go build -mod vendor -o ./build/ ./cmd/*
+          command: make build
 
   publish:
     <<: *defaults
@@ -66,7 +59,10 @@ jobs:
       - run:
           name: Maybe publish container image
           command: |
-            if ! git describe --exact-match HEAD > /dev/null 2>&1; then echo "Not on tagged commit - nothing to do"; exit 0; fi
+            if ! git describe --exact-match HEAD > /dev/null 2>&1; then
+              echo "Not on tagged commit - nothing to do"
+              exit 0
+            fi
             echo "${GHCR_PUBLISH_TOKEN}" | docker login ghcr.io -u markormesher --password-stdin
             docker push ghcr.io/markormesher/${CIRCLE_PROJECT_REPONAME}:$(git describe --tags)
 

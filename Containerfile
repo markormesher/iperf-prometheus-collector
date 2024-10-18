@@ -4,7 +4,7 @@ WORKDIR /app
 COPY go.mod ./
 COPY ./cmd ./cmd
 
-RUN go build -o ./build/main ./cmd/*.go
+RUN make build
 
 # ---
 
