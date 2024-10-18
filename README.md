@@ -12,19 +12,19 @@ Note that `iperf` tests take 10+ seconds per target and are executed sequentiall
 
 ## Measurements
 
-| Measurement                   | Description                                                        | Labels   |
-| ----------------------------- | ------------------------------------------------------------------ | -------- |
-| `iperf_tests_started`         | Number of tests that this collector has started.                   | `target` |
-| `iperf_tests_finished`        | Number of tests that have finished successfully.                   | `target` |
-| `iperf_tests_failed`          | Number of tests that have failed.                                  | `target` |
-| `iperf_sent_bytes`            | Number of bytes sent during the test.                              | `target` |
-| `iperf_sent_packets`          | Number of packets sent during the test (UDP only).                 | `target` |
-| `iperf_sent_lost_packets`     | Number of packet lost during the test (UDP only).                  | `target` |
-| `iperf_sent_seconds`          | Duration of the test on the sending side, in seconds.              | `target` |
-| `iperf_received_bytes`        | Number of bytes received during the test.                          | `target` |
-| `iperf_received_packets`      | Number of packets received during the test (UDP only).             | `target` |
-| `iperf_received_lost_packets` | Number of packets lost by the receiver during the test (UDP only). | `target` |
-| `iperf_received_seconds`      | Duration of the test on the receiving side, in seconds.            | `target` |
+| Measurement                   | Description                                                        | Labels          |
+| ----------------------------- | ------------------------------------------------------------------ | --------------- |
+| `iperf_tests_started`         | Number of tests that this collector has started.                   | none            |
+| `iperf_tests_finished`        | Number of tests that have finished successfully.                   | none            |
+| `iperf_tests_failed`          | Number of tests that have failed.                                  | none            |
+| `iperf_sent_bytes`            | Number of bytes sent during the test.                              | target, options |
+| `iperf_sent_packets`          | Number of packets sent during the test (UDP only).                 | target, options |
+| `iperf_sent_lost_packets`     | Number of packet lost during the test (UDP only).                  | target, options |
+| `iperf_sent_seconds`          | Duration of the test on the sending side, in seconds.              | target, options |
+| `iperf_received_bytes`        | Number of bytes received during the test.                          | target, options |
+| `iperf_received_packets`      | Number of packets received during the test (UDP only).             | target, options |
+| `iperf_received_lost_packets` | Number of packets lost by the receiver during the test (UDP only). | target, options |
+| `iperf_received_seconds`      | Duration of the test on the receiving side, in seconds.            | target, options |
 
 These metrics can be combined to show the throughput in bps with the following example Prometheus query:
 
@@ -40,9 +40,16 @@ Configuration is via the following environment variables:
 | ------------------ | --------- | ------------------------------------------------------------------------ | ----------------------- |
 | `TARGET_LIST`      | yes       | Comma separated list of host names or IP addresses to run tests against. | n/a                     |
 | `TEST_INTERVAL_MS` | no        | How often to run iperf tests.                                            | 600000ms (= 10 minutes) |
-| `PROTOCOL`         | no        | Test protocol, `tcp` or `udp`.                                           | `tcp` |
+| `TEST_PROTOCOL`    | no        | Test protocol, `tcp` or `udp`.                                           | `tcp`                   |
+| `TEST_OPTIONS`     | no        | Options passed directly to `iperf3`, e.g. `-p 5202 -t 20`.               | none                    |
 
-### `iperf` Server
+### Important Note: `TEST_OPTIONS`
+
+- Do not use these options to set the `--udp` flag for tests - use the `TEST_PROTOCOL=udp` environment variable instead.
+- Do not use these optoins to change the output format - this tool already sets `--json` and expects a JSON output.
+- These options are passed directly to the command line used to run the test. If anyone else can control this argument they can easily run arbitrary commands, so make sure untrusted users are not able to make changes.
+
+## `iperf` Server
 
 This collector requires that an `iperf` server is running on each of the targets to be tested and is available on the default port.
 

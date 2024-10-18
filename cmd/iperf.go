@@ -29,7 +29,8 @@ func runIperfTest(settings *Settings) {
 		testsStarted.Value++
 
 		tags := map[string]string{
-			"target": target,
+			"target":  target,
+			"options": settings.Options,
 		}
 
 		udpOption := ""
@@ -37,7 +38,7 @@ func runIperfTest(settings *Settings) {
 			udpOption = "--udp"
 		}
 
-		cmd := exec.Command("bash", "-c", fmt.Sprintf("iperf3 --json %s --client %s", udpOption, target))
+		cmd := exec.Command("bash", "-c", fmt.Sprintf("iperf3 --client %s --json %s %s", target, udpOption, settings.Options))
 
 		output, err := cmd.Output()
 		if err != nil {
