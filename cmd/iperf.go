@@ -29,8 +29,9 @@ func runIperfTest(settings *Settings) {
 		testsStarted.Value++
 
 		tags := map[string]string{
-			"target":  target,
-			"options": settings.Options,
+			"target":   target,
+			"protocol": settings.Protocol,
+			"options":  settings.Options,
 		}
 
 		udpOption := ""
