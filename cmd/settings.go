@@ -40,7 +40,7 @@ func getSettings() (*Settings, error) {
 
 	listenPortStr := os.Getenv("LISTEN_PORT")
 	if listenPortStr == "" {
-		listenPortStr = "0930"
+		listenPortStr = "9030"
 	}
 	listenPort, err := strconv.Atoi(listenPortStr)
 	if err != nil {
