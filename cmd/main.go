@@ -24,7 +24,7 @@ func main() {
 	go runTests(settings)
 
 	http.HandleFunc("/", httpHandler)
-	err = http.ListenAndServe("0.0.0.0:9030", nil)
+	err = http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", settings.ListenPort), nil)
 	if err != nil {
 		l.Error("Failed to start server")
 		panic(err)

@@ -24,6 +24,7 @@ Configuration is via the following environment variables:
 | `TEST_INTERVAL_MS` | no        | How often to run iperf tests.                                            | 600000ms (= 10 minutes) |
 | `TEST_PROTOCOL`    | no        | Test protocol, `tcp` or `udp`.                                           | `tcp`                   |
 | `TEST_OPTIONS`     | no        | Options passed directly to `iperf3`, e.g. `-p 5202 -t 20`.               | none                    |
+| `LISTEN_PORT`      | no        | Server port to listen on.                                                | 9030                    |
 
 ### Important Note: `TEST_OPTIONS`
 

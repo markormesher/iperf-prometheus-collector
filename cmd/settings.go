@@ -12,6 +12,7 @@ type Settings struct {
 	UpdateIntervalMs int
 	Protocol         string
 	Options          string
+	ListenPort       int
 }
 
 func getSettings() (*Settings, error) {
@@ -37,10 +38,20 @@ func getSettings() (*Settings, error) {
 
 	options := strings.TrimSpace(os.Getenv("TEST_OPTIONS"))
 
+	listenPortStr := os.Getenv("LISTEN_PORT")
+	if listenPortStr == "" {
+		listenPortStr = "9030"
+	}
+	listenPort, err := strconv.Atoi(listenPortStr)
+	if err != nil {
+		return nil, fmt.Errorf("Could not parse listen port as an integer: %w", err)
+	}
+
 	return &Settings{
 		TargetList:       targetList,
 		UpdateIntervalMs: updateIntervalMs,
 		Protocol:         protocol,
 		Options:          options,
+		ListenPort:       listenPort,
 	}, nil
 }
