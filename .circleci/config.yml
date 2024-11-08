@@ -3,7 +3,7 @@ version: 2.1
 defaults: &defaults
   working_directory: /tmp/app
   docker:
-    - image: cimg/go:1.23.2
+    - image: cimg/go:1.23.3
 
 jobs:
   setup:
