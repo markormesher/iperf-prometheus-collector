@@ -8,22 +8,22 @@ import (
 )
 
 type Settings struct {
-	TargetList       []string
-	UpdateIntervalMs int
-	Protocol         string
-	Options          string
-	ListenPort       int
+	TargetList     []string
+	TestIntervalMs int
+	Protocol       string
+	Options        string
+	ListenPort     int
 }
 
 func getSettings() (*Settings, error) {
 	targetListRaw := os.Getenv("TARGET_LIST")
 	targetList := strings.Split(targetListRaw, ",")
 
-	updateIntervalMsStr := os.Getenv("UPDATE_INTERVAL_MS")
-	if updateIntervalMsStr == "" {
-		updateIntervalMsStr = "600000"
+	testIntervalMsStr := os.Getenv("TEST_INTERVAL_MS")
+	if testIntervalMsStr == "" {
+		testIntervalMsStr = "600000"
 	}
-	updateIntervalMs, err := strconv.Atoi(updateIntervalMsStr)
+	updateIntervalMs, err := strconv.Atoi(testIntervalMsStr)
 	if err != nil {
 		return nil, fmt.Errorf("Could not parse update interval as an integer: %w", err)
 	}
@@ -48,10 +48,10 @@ func getSettings() (*Settings, error) {
 	}
 
 	return &Settings{
-		TargetList:       targetList,
-		UpdateIntervalMs: updateIntervalMs,
-		Protocol:         protocol,
-		Options:          options,
-		ListenPort:       listenPort,
+		TargetList:     targetList,
+		TestIntervalMs: updateIntervalMs,
+		Protocol:       protocol,
+		Options:        options,
+		ListenPort:     listenPort,
 	}, nil
 }
