@@ -1,3 +1,3 @@
 module github.com/markormesher/iperf-prometheus-collector
 
-go 1.23.2
+go 1.23.3
