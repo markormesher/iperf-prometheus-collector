@@ -34,7 +34,7 @@ func main() {
 func runTests(settings *Settings) {
 	for {
 		runIperfTest(settings)
-		time.Sleep(time.Duration(settings.UpdateIntervalMs) * time.Millisecond)
+		time.Sleep(time.Duration(settings.TestIntervalMs) * time.Millisecond)
 	}
 }
 
