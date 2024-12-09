@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.23.3@sha256:73f06be4578c9987ce560087e2e2ea6485fb605e3910542cadd8fa09fc5f3e31 as builder
+FROM docker.io/golang:1.23.4@sha256:574185e5c6b9d09873f455a7c205ea0514bfd99738c5dc7750196403a44ed4b7 as builder
 WORKDIR /app
 
 COPY go.mod Makefile ./
@@ -8,7 +8,7 @@ RUN make build
 
 # ---
 
-FROM docker.io/golang:1.23.3-bookworm@sha256:3f3b9daa3de608f3e869cd2ff8baf21555cf0fca9fd34251b8f340f9b7c30ec5
+FROM docker.io/golang:1.23.4-bookworm@sha256:ef30001eeadd12890c7737c26f3be5b3a8479ccdcdc553b999c84879875a27ce
 WORKDIR /app
 
 RUN apt update && apt install -y --no-install-recommends iperf3 && rm -rf /var/lib/apt/lists
