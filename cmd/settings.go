@@ -8,14 +8,15 @@ import (
 )
 
 type Settings struct {
-	TargetList     []string
-	TestIntervalMs int
-	Protocol       string
-	Options        string
-	ListenPort     int
+	TargetList         []string
+	TestIntervalMs     int
+	Protocol           string
+	Options            string
+	ListenPort         int
+	DisardStaleResults bool
 }
 
-func getSettings() (*Settings, error) {
+func loadSettings() error {
 	targetListRaw := os.Getenv("TARGET_LIST")
 	targetList := strings.Split(targetListRaw, ",")
 
@@ -25,7 +26,7 @@ func getSettings() (*Settings, error) {
 	}
 	updateIntervalMs, err := strconv.Atoi(testIntervalMsStr)
 	if err != nil {
-		return nil, fmt.Errorf("Could not parse update interval as an integer: %w", err)
+		return fmt.Errorf("Could not parse update interval as an integer: %w", err)
 	}
 
 	protocol := os.Getenv("TEST_PROTOCOL")
@@ -33,7 +34,7 @@ func getSettings() (*Settings, error) {
 		protocol = "tcp"
 	}
 	if protocol != "tcp" && protocol != "udp" {
-		return nil, fmt.Errorf("Invalid protocol: %s", protocol)
+		return fmt.Errorf("Invalid protocol: %s", protocol)
 	}
 
 	options := strings.TrimSpace(os.Getenv("TEST_OPTIONS"))
@@ -44,14 +45,23 @@ func getSettings() (*Settings, error) {
 	}
 	listenPort, err := strconv.Atoi(listenPortStr)
 	if err != nil {
-		return nil, fmt.Errorf("Could not parse listen port as an integer: %w", err)
+		return fmt.Errorf("Could not parse listen port as an integer: %w", err)
 	}
 
-	return &Settings{
-		TargetList:     targetList,
-		TestIntervalMs: updateIntervalMs,
-		Protocol:       protocol,
-		Options:        options,
-		ListenPort:     listenPort,
-	}, nil
+	discardStaleResultsStr := os.Getenv("DISCARD_STALE_RESULTS")
+	discardStaleResults := false
+	if discardStaleResultsStr != "" {
+		discardStaleResults = true
+	}
+
+	settings = Settings{
+		TargetList:         targetList,
+		TestIntervalMs:     updateIntervalMs,
+		Protocol:           protocol,
+		Options:            options,
+		ListenPort:         listenPort,
+		DisardStaleResults: discardStaleResults,
+	}
+
+	return nil
 }

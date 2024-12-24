@@ -18,13 +18,14 @@ See [`cmd/metric.go`](./cmd/metric.go).
 
 Configuration is via the following environment variables:
 
-| Variable           | Required? | Description                                                              | Default                 |
-| ------------------ | --------- | ------------------------------------------------------------------------ | ----------------------- |
-| `TARGET_LIST`      | yes       | Comma separated list of host names or IP addresses to run tests against. | n/a                     |
-| `TEST_INTERVAL_MS` | no        | How often to run iperf tests.                                            | 600000ms (= 10 minutes) |
-| `TEST_PROTOCOL`    | no        | Test protocol, `tcp` or `udp`.                                           | `tcp`                   |
-| `TEST_OPTIONS`     | no        | Options passed directly to `iperf3`, e.g. `-p 5202 -t 20`.               | none                    |
-| `LISTEN_PORT`      | no        | Server port to listen on.                                                | 9030                    |
+| Variable                | Required? | Description                                                              | Default                 |
+| ----------------------- | --------- | ------------------------------------------------------------------------ | ----------------------- |
+| `TARGET_LIST`           | yes       | Comma separated list of host names or IP addresses to run tests against. | n/a                     |
+| `TEST_INTERVAL_MS`      | no        | How often to run iperf tests.                                            | 600000ms (= 10 minutes) |
+| `TEST_PROTOCOL`         | no        | Test protocol, `tcp` or `udp`.                                           | `tcp`                   |
+| `TEST_OPTIONS`          | no        | Options passed directly to `iperf3`, e.g. `-p 5202 -t 20`.               | none                    |
+| `LISTEN_PORT`           | no        | Server port to listen on.                                                | 9030                    |
+| `DISCARD_STALE_RESULTS` | no        | Set non-empty to drop non-`..._total` results after they are read.       | none                    |
 
 ### Important Note: `TEST_OPTIONS`
 
