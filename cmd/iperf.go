@@ -24,9 +24,10 @@ type IperfResult struct {
 	} `json:"end"`
 }
 
-func runIperfTest(settings *Settings) {
+func runIperfTest() {
 	for _, target := range settings.TargetList {
-		testsStarted.Value++
+		l.Info("Running iperf test", "target", target)
+		metrics.Submit(Metric{Label: "iperf_tests_started", Value: 1})
 
 		tags := map[string]string{
 			"target":   target,
@@ -44,32 +45,33 @@ func runIperfTest(settings *Settings) {
 		output, err := cmd.Output()
 		if err != nil {
 			l.Error("Failed to run iperf test", "target", target, "error", err, "output", string(output))
-			testsFailed.Value++
+			metrics.Submit(Metric{Label: "iperf_tests_failed", Value: 1})
 			continue
 		}
 
 		var result IperfResult
 		err = json.NewDecoder(bytes.NewReader(output)).Decode(&result)
 		if err != nil {
-			l.Error("Failed to decode iperf", "target", target, "error", err)
-			testsFailed.Value++
+			l.Error("Failed to decode iperf result", "target", target, "error", err)
+			metrics.Submit(Metric{Label: "iperf_tests_failed", Value: 1})
 			continue
 		}
 
-		liveMetrics.Push(Metric{Label: "iperf_sent_bytes", Tags: tags, Value: result.End.SumSent.Bytes})
-		liveMetrics.Push(Metric{Label: "iperf_sent_seconds", Tags: tags, Value: result.End.SumSent.Seconds})
+		metrics.Submit(Metric{Label: "iperf_sent_bytes", Tags: tags, Value: result.End.SumSent.Bytes})
+		metrics.Submit(Metric{Label: "iperf_sent_seconds", Tags: tags, Value: result.End.SumSent.Seconds})
 		if settings.Protocol == "udp" {
-			liveMetrics.Push(Metric{Label: "iperf_sent_packets", Tags: tags, Value: result.End.SumSent.Packets})
-			liveMetrics.Push(Metric{Label: "iperf_sent_lost_packets", Tags: tags, Value: result.End.SumSent.LostPackets})
+			metrics.Submit(Metric{Label: "iperf_sent_packets", Tags: tags, Value: result.End.SumSent.Packets})
+			metrics.Submit(Metric{Label: "iperf_sent_lost_packets", Tags: tags, Value: result.End.SumSent.LostPackets})
 		}
 
-		liveMetrics.Push(Metric{Label: "iperf_received_bytes", Tags: tags, Value: result.End.SumReceived.Bytes})
-		liveMetrics.Push(Metric{Label: "iperf_received_seconds", Tags: tags, Value: result.End.SumReceived.Seconds})
+		metrics.Submit(Metric{Label: "iperf_received_bytes", Tags: tags, Value: result.End.SumReceived.Bytes})
+		metrics.Submit(Metric{Label: "iperf_received_seconds", Tags: tags, Value: result.End.SumReceived.Seconds})
 		if settings.Protocol == "udp" {
-			liveMetrics.Push(Metric{Label: "iperf_received_packets", Tags: tags, Value: result.End.SumReceived.Packets})
-			liveMetrics.Push(Metric{Label: "iperf_received_lost_packets", Tags: tags, Value: result.End.SumReceived.LostPackets})
+			metrics.Submit(Metric{Label: "iperf_received_packets", Tags: tags, Value: result.End.SumReceived.Packets})
+			metrics.Submit(Metric{Label: "iperf_received_lost_packets", Tags: tags, Value: result.End.SumReceived.LostPackets})
 		}
 
-		testsFinished.Value++
+		l.Info("Finished iperf test", "target", target)
+		metrics.Submit(Metric{Label: "iperf_tests_finished", Value: 1})
 	}
 }
