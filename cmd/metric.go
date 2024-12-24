@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 )
 
@@ -17,12 +19,8 @@ func NewMetricsHandler() MetricsHandler {
 	}
 }
 
-func (h *MetricsHandler) key(m Metric) string {
-	return fmt.Sprintf("%s/%v", m.Label, m.Tags)
-}
-
 func (h *MetricsHandler) Submit(m Metric) {
-	key := h.key(m)
+	key := m.StableKey()
 
 	// always update the totals metrics
 	oldTotalMetric, ok := h.totalMetrics[key]
@@ -64,6 +62,20 @@ type Metric struct {
 	Label string
 	Tags  map[string]string
 	Value float32
+}
+
+func (m *Metric) StableKey() string {
+	key := m.Label
+
+	tagKeys := slices.Collect(maps.Keys(m.Tags))
+	slices.Sort(tagKeys)
+	for _, tagKey := range tagKeys {
+		key = key + fmt.Sprintf("/%s=%s", tagKey, m.Tags[tagKey])
+	}
+
+	fmt.Println(key)
+
+	return key
 }
 
 func (m *Metric) Format() string {
