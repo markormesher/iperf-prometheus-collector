@@ -1,95 +1,116 @@
-version: 2.1
+# This file is maintained by Tedium - manual edits will be overwritten!
 
-defaults: &defaults
-  working_directory: /tmp/app
-  docker:
-    - image: cimg/go:1.23.3
-
+version: "2.1"
 jobs:
-  setup:
-    <<: *defaults
+  checkout:
+    docker:
+      - image: cimg/base:2024.12
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - go-mod-v1-{{ .Branch }}
-            - go-mod-v1
-      - run:
-          name: Download dependencies
-          command: go mod vendor
-      - save_cache:
-          key: go-mod-v1-{{ .Branch }}-{{ epoch }}
-          paths:
-            - vendor
+      - checkout:
+          path: .
       - persist_to_workspace:
           root: .
           paths:
             - .
-
-  lint:
-    <<: *defaults
+  ci-all:
+    docker:
+      - image: cimg/base:2024.12
     steps:
       - attach_workspace:
           at: .
       - run:
-          name: Lint
-          command: make lint
-
-  build:
-    <<: *defaults
+          command: echo "Done"
+  fetch-task:
+    docker:
+      - image: ghcr.io/markormesher/task-fetcher:v0.4.1
     steps:
       - attach_workspace:
           at: .
       - run:
-          name: Build
-          command: make build
-
-  publish:
-    <<: *defaults
+          command: cp /task .
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  imgbuild-imgpush:
+    docker:
+      - image: cimg/base:2024.12
     steps:
       - attach_workspace:
           at: .
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Build container image
-          command: |
-            docker build /tmp/app -f Containerfile -t ghcr.io/markormesher/${CIRCLE_PROJECT_REPONAME}:$(git describe --tags)
-            docker image ls
-      - run:
-          name: Maybe publish container image
-          command: |
-            if ! git describe --exact-match HEAD > /dev/null 2>&1; then
-              echo "Not on tagged commit - nothing to do"
-              exit 0
-            fi
+          command: |-
             echo "${GHCR_PUBLISH_TOKEN}" | docker login ghcr.io -u markormesher --password-stdin
-            docker push ghcr.io/markormesher/${CIRCLE_PROJECT_REPONAME}:$(git describe --tags)
-
+            ./task imgbuild
+            ./task imgpush
+  imgrefs:
+    docker:
+      - image: docker.io/alpine/git:v2.47.1
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          command: ./task imgrefs
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  lint-go:
+    docker:
+      - image: docker.io/golang:1.23.4
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          command: ./task lint-go
 workflows:
   version: 2
   main:
     jobs:
-      - setup:
+      - checkout:
+          requires: []
           filters:
             tags:
               only: /.*/
-      - lint:
+      - fetch-task:
           requires:
-            - setup
+            - checkout
           filters:
             tags:
               only: /.*/
-      - build:
+      - lint-go:
           requires:
-            - setup
+            - checkout
+            - fetch-task
           filters:
             tags:
               only: /.*/
-      - publish:
+      - imgrefs:
           requires:
-            - lint
-            - build
+            - checkout
+            - fetch-task
+            - lint-go
+          filters:
+            tags:
+              only: /.*/
+      - imgbuild-imgpush:
+          requires:
+            - checkout
+            - fetch-task
+            - imgrefs
+            - lint-go
+          filters:
+            tags:
+              only: /.*/
+      - ci-all:
+          requires:
+            - checkout
+            - fetch-task
+            - imgbuild-imgpush
+            - imgrefs
+            - lint-go
           filters:
             tags:
               only: /.*/

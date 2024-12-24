@@ -1,0 +1,160 @@
+# This file is maintained by Tedium - manual edits will be overwritten!
+
+version: "3"
+includes:
+  local:
+    taskfile: taskfile.local.yml
+    optional: true
+tasks:
+  imgbuild:
+    cmds:
+      - task: imgbuild-root
+  imgbuild-root:
+    dir: '{{.ROOT_DIR}}'
+    deps:
+      - imgrefs-root
+    cmds:
+      - cmd: |-
+          set -euo pipefail
+
+          if command -v podman >/dev/null 2>&1; then
+            # Podman for building locally or in Tatsu CI
+            builder=podman
+          elif command -v docker >/dev/null 2>&1; then
+            # Docker for building in Circle CI
+            builder=docker
+          else
+            echo "Cannot find Podman or Docker" >&2
+            exit 1
+          fi
+
+          # First build to get visible logs
+          $builder build -f Containerfile .
+
+          # Second (cached) build to get the image ID
+          img=$($builder build -q -f Containerfile .)
+
+          if [[ -f .imgrefs ]]; then
+            cat .imgrefs | while read tag; do
+              $builder tag "$img" "${tag}"
+              echo "Tagged ${tag}"
+            done
+          fi
+  imgpush:
+    cmds:
+      - task: imgpush-root
+  imgpush-root:
+    dir: '{{.ROOT_DIR}}'
+    deps:
+      - imgrefs-root
+    cmds:
+      - cmd: |-
+          set -euo pipefail
+
+          if command -v podman >/dev/null 2>&1; then
+            # Podman for building locally or in Tatsu CI
+            builder=podman
+          elif command -v docker >/dev/null 2>&1; then
+            # Docker for building in Circle CI
+            builder=docker
+          else
+            echo "Cannot find Podman or Docker" >&2
+            exit 1
+          fi
+
+          if [[ -f .imgrefs ]]; then
+            cat .imgrefs | (grep -v "^localhost" || :) | while read tag; do
+              $builder push "${tag}"
+              echo "Pushed ${tag}"
+            done
+          else
+            echo "No .imgrefs file - nothing will be pushed"
+            exit 1
+          fi
+  imgrefs:
+    cmds:
+      - task: imgrefs-root
+  imgrefs-root:
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - cmd: |-
+          set -euo pipefail
+
+          if [[ -f .imgrefs ]] && [[ ${CI+y} == "y" ]]; then
+            echo "Skipping re-computing tags"
+            exit 0
+          fi
+
+          if ! command -v git >/dev/null 2>&1; then
+            echo "Cannot find git" >&2
+            exit 1
+          fi
+
+          if ! git describe --tags >/dev/null 2>&1; then
+            echo "No git tags to descibe" >&2
+            exit 1
+          fi
+
+          if ! grep ".imgrefs" .gitignore >/dev/null 2>&1; then
+            echo ".gitignore must include .imgrefs to use the image builder tasks" >&2
+            exit 1
+          fi
+
+          img_name=$( (grep "LABEL image.name=" Containerfile || echo) | head -n 1 | cut -d '=' -f 2-)
+          img_registry=$( (grep "LABEL image.registry=" Containerfile || echo) | head -n 1 | cut -d '=' -f 2-)
+
+          version=$(git describe --tags)
+          is_exact_tag=$(git describe --tags --exact-match >/dev/null 2>&1 && echo y || echo n)
+          major_version=$(echo "${version}" | cut -d '.' -f 1)
+          latest_version_overall=$(git tag -l | sort -r -V | head -n 1)
+          latest_version_within_major=$(git tag -l | grep "^${major_version}" | sort -r -V | head -n 1)
+
+          echo -n "" > .imgrefs
+
+          if [[ ! -z "$img_name" ]]; then
+            echo "localhost/${img_name}" >> .imgrefs
+            echo "localhost/${img_name}:${version}" >> .imgrefs
+
+            if [[ ! -z "$img_registry" ]] && [[ ${CI+y} == "y" ]]; then
+              echo "${img_registry}/${img_name}:${version}" >> .imgrefs
+
+              if [[ "${is_exact_tag}" == "y" ]] && [[ "${version}" == "${latest_version_within_major}" ]]; then
+                echo "${img_registry}/${img_name}:${major_version}" >> .imgrefs
+              fi
+
+              if [[ "${is_exact_tag}" == "y" ]] && [[ "${version}" == "${latest_version_overall}" ]]; then
+                echo "${img_registry}/${img_name}:latest" >> .imgrefs
+              fi
+            fi
+          else
+            echo "Warning: no image name label; image will not be tagged" >&2
+          fi
+
+          echo "Image refs:"
+          cat .imgrefs | grep "." || echo "None"
+  lint:
+    cmds:
+      - task: lint-go-root
+  lint-go:
+    cmds:
+      - task: lint-go-root
+  lint-go-root:
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - cmd: |-
+          lint_diff=$(gofmt -e -s -d .)
+          if [[ ! -z "$lint_diff" ]]; then
+            echo "Lint errors:"
+            echo "$lint_diff"
+            exit 1
+          fi
+  lintfix:
+    cmds:
+      - task: lintfix-go-root
+  lintfix-go:
+    cmds:
+      - task: lintfix-go-root
+  lintfix-go-root:
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - cmd: gofmt -s -w .
