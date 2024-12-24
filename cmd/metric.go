@@ -73,8 +73,6 @@ func (m *Metric) StableKey() string {
 		key = key + fmt.Sprintf("/%s=%s", tagKey, m.Tags[tagKey])
 	}
 
-	fmt.Println(key)
-
 	return key
 }
 
