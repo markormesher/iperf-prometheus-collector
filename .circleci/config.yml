@@ -4,7 +4,7 @@ version: "2.1"
 jobs:
   checkout:
     docker:
-      - image: cimg/base:2024.12
+      - image: cimg/base:2025.01
     steps:
       - checkout:
           path: .
@@ -14,7 +14,7 @@ jobs:
             - .
   ci-all:
     docker:
-      - image: cimg/base:2024.12
+      - image: cimg/base:2025.01
     steps:
       - attach_workspace:
           at: .
@@ -34,7 +34,7 @@ jobs:
             - .
   imgbuild-imgpush:
     docker:
-      - image: cimg/base:2024.12
+      - image: cimg/base:2025.01
     steps:
       - attach_workspace:
           at: .
