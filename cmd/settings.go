@@ -24,9 +24,9 @@ func loadSettings() error {
 	if testIntervalMsStr == "" {
 		testIntervalMsStr = "600000"
 	}
-	updateIntervalMs, err := strconv.Atoi(testIntervalMsStr)
+	testIntervalMs, err := strconv.Atoi(testIntervalMsStr)
 	if err != nil {
-		return fmt.Errorf("Could not parse update interval as an integer: %w", err)
+		return fmt.Errorf("Could not parse test interval as an integer: %w", err)
 	}
 
 	protocol := os.Getenv("TEST_PROTOCOL")
@@ -56,7 +56,7 @@ func loadSettings() error {
 
 	settings = Settings{
 		TargetList:         targetList,
-		TestIntervalMs:     updateIntervalMs,
+		TestIntervalMs:     testIntervalMs,
 		Protocol:           protocol,
 		Options:            options,
 		ListenPort:         listenPort,

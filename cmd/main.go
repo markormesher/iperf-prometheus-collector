@@ -32,7 +32,8 @@ func main() {
 }
 
 func runTests() {
-	for ; true; <-time.Tick(time.Duration(settings.TestIntervalMs)) {
+	fmt.Println(settings.TestIntervalMs)
+	for ; true; <-time.Tick(time.Duration(settings.TestIntervalMs) * time.Millisecond) {
 		runIperfTest()
 	}
 }
