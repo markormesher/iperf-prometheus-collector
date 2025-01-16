@@ -119,14 +119,14 @@ var metricTypes = map[string]string{
 	"iperf_received_seconds":      "gauge",
 
 	// summed test results
-	"iperf_sent_bytes_total":            "gauge",
-	"iperf_sent_packets_total":          "gauge",
-	"iperf_sent_lost_packets_total":     "gauge",
-	"iperf_sent_seconds_total":          "gauge",
-	"iperf_received_bytes_total":        "gauge",
-	"iperf_received_packets_total":      "gauge",
-	"iperf_received_lost_packets_total": "gauge",
-	"iperf_received_seconds_total":      "gauge",
+	"iperf_sent_bytes_total":            "counter",
+	"iperf_sent_packets_total":          "counter",
+	"iperf_sent_lost_packets_total":     "counter",
+	"iperf_sent_seconds_total":          "counter",
+	"iperf_received_bytes_total":        "counter",
+	"iperf_received_packets_total":      "counter",
+	"iperf_received_lost_packets_total": "counter",
+	"iperf_received_seconds_total":      "counter",
 }
 
 var metricHelps = map[string]string{
