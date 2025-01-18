@@ -59,7 +59,7 @@ jobs:
             - .
   lint-go:
     docker:
-      - image: docker.io/golang:1.23.4
+      - image: docker.io/golang:1.23.5
     steps:
       - attach_workspace:
           at: .
