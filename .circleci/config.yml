@@ -22,7 +22,7 @@ jobs:
           command: echo "Done"
   fetch-task:
     docker:
-      - image: ghcr.io/markormesher/task-fetcher:v0.5.6
+      - image: ghcr.io/markormesher/task-fetcher:v0.5.7
     steps:
       - attach_workspace:
           at: .
