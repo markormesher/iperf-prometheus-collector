@@ -31,7 +31,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - ./task
   imgbuild-imgpush:
     docker:
       - image: cimg/base:2025.02
@@ -56,7 +56,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - ./.imgrefs
+            - ./**/.imgrefs
   lint-go:
     docker:
       - image: docker.io/golang:1.24.0
@@ -64,7 +65,9 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          command: ./task lint-go
+          command: |-
+            export GOPATH=$(pwd)/.go
+            ./task lint-go
 workflows:
   version: 2
   main:
@@ -80,18 +83,17 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - lint-go:
+      - imgrefs:
           requires:
             - checkout
             - fetch-task
           filters:
             tags:
               only: /.*/
-      - imgrefs:
+      - lint-go:
           requires:
             - checkout
             - fetch-task
-            - lint-go
           filters:
             tags:
               only: /.*/
@@ -106,8 +108,6 @@ workflows:
               only: /.*/
       - ci-all:
           requires:
-            - checkout
-            - fetch-task
             - imgbuild-imgpush
             - imgrefs
             - lint-go
