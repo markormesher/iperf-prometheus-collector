@@ -6,6 +6,16 @@ includes:
     taskfile: taskfile.local.yml
     optional: true
 tasks:
+  deps:
+    cmds:
+      - task: deps-go-root
+  deps-go:
+    cmds:
+      - task: deps-go-root
+  deps-go-root:
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - cmd: go mod tidy && go mod download --json
   imgbuild:
     cmds:
       - task: imgbuild-root
@@ -142,10 +152,10 @@ tasks:
     dir: '{{.ROOT_DIR}}'
     cmds:
       - cmd: |-
-          lint_diff=$(gofmt -e -s -d .)
-          if [[ ! -z "$lint_diff" ]]; then
-            echo "Lint errors:"
-            echo "$lint_diff"
+          fmt_diff=$(gofmt -e -s -d $(go list -f '{{ "{{.Dir}}" }}' ./... | grep -v /.go/ | grep -v /vendor/))
+          if [[ ! -z "$fmt_diff" ]]; then
+            echo "Format errors:"
+            echo "$fmt_diff"
             exit 1
           fi
   lintfix:
