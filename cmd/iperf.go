@@ -8,7 +8,8 @@ import (
 )
 
 type IperfResult struct {
-	End struct {
+	Error string `json:"error"`
+	End   struct {
 		SumSent struct {
 			Bytes       float32 `json:"bytes"`
 			Seconds     float32 `json:"seconds"`
@@ -53,6 +54,13 @@ func runIperfTest() {
 		err = json.NewDecoder(bytes.NewReader(output)).Decode(&result)
 		if err != nil {
 			l.Error("Failed to decode iperf result", "target", target, "error", err)
+			metrics.Submit(Metric{Label: "iperf_tests_failed", Value: 1})
+			continue
+		}
+
+		if result.Error != "" {
+			// note: some failures cause iperf to exit non-zero, caught above, but some cause it to exit zero but report an error in the output
+			l.Error("Failed to run iperf test", "target", target, "error", result.Error, "output", string(output))
 			metrics.Submit(Metric{Label: "iperf_tests_failed", Value: 1})
 			continue
 		}
