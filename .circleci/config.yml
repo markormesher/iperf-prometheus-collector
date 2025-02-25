@@ -36,7 +36,7 @@ jobs:
             - ./.go
   fetch-task:
     docker:
-      - image: ghcr.io/markormesher/task-fetcher:v0.5.7
+      - image: ghcr.io/markormesher/task-fetcher:v0.5.8
     steps:
       - attach_workspace:
           at: .
