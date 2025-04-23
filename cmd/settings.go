@@ -26,7 +26,7 @@ func loadSettings() error {
 	}
 	testIntervalMs, err := strconv.Atoi(testIntervalMsStr)
 	if err != nil {
-		return fmt.Errorf("Could not parse test interval as an integer: %w", err)
+		return fmt.Errorf("could not parse test interval as an integer: %w", err)
 	}
 
 	protocol := os.Getenv("TEST_PROTOCOL")
@@ -34,7 +34,7 @@ func loadSettings() error {
 		protocol = "tcp"
 	}
 	if protocol != "tcp" && protocol != "udp" {
-		return fmt.Errorf("Invalid protocol: %s", protocol)
+		return fmt.Errorf("invalid protocol: %s", protocol)
 	}
 
 	options := strings.TrimSpace(os.Getenv("TEST_OPTIONS"))
@@ -45,7 +45,7 @@ func loadSettings() error {
 	}
 	listenPort, err := strconv.Atoi(listenPortStr)
 	if err != nil {
-		return fmt.Errorf("Could not parse listen port as an integer: %w", err)
+		return fmt.Errorf("could not parse listen port as an integer: %w", err)
 	}
 
 	discardStaleResultsStr := os.Getenv("DISCARD_STALE_RESULTS")
