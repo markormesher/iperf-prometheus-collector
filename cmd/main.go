@@ -41,6 +41,10 @@ func httpHandler(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "text/plain")
 
 	for _, m := range metrics.GetAll() {
-		res.Write([]byte(m.Format()))
+		_, err := res.Write([]byte(m.Format()))
+		if err != nil {
+			l.Error("error writing HTTP response", "error", err)
+			return
+		}
 	}
 }
