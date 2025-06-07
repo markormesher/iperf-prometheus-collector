@@ -22,7 +22,7 @@ jobs:
           command: echo "Done"
   deps-go:
     docker:
-      - image: docker.io/golang:1.24.3
+      - image: docker.io/golang:1.24.4
     steps:
       - attach_workspace:
           at: .
@@ -74,7 +74,7 @@ jobs:
             - ./**/.imgrefs
   lint-go:
     docker:
-      - image: docker.io/golang:1.24.3
+      - image: docker.io/golang:1.24.4
     steps:
       - attach_workspace:
           at: .
