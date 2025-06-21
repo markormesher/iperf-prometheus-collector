@@ -16,8 +16,6 @@ jobs:
     docker:
       - image: cimg/base:2025.06
     steps:
-      - attach_workspace:
-          at: .
       - run:
           command: echo "Done"
   deps-go:
@@ -26,14 +24,20 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - restore_cache:
+          keys:
+            - deps-go-v5-{{ checksum ".task-meta-cachekey-go" }}
+            - deps-go-v5-
       - run:
           command: |-
-            export GOPATH=$(pwd)/.go
+            export GOPATH=/.go
+            export GOCACHE=/.gocache
             ./task deps-go
-      - persist_to_workspace:
-          root: .
+      - save_cache:
+          key: deps-go-v5-{{ checksum ".task-meta-cachekey-go" }}
           paths:
-            - ./.go
+            - /.go
+            - /.gocache
   fetch-task:
     docker:
       - image: ghcr.io/markormesher/task-fetcher:v0.5.18
@@ -70,17 +74,22 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - ./.imgrefs
-            - ./**/.imgrefs
+            - ./.task-meta-imgrefs
+            - ./**/.task-meta-imgrefs
   lint-go:
     docker:
       - image: docker.io/golang:1.24.4
     steps:
       - attach_workspace:
           at: .
+      - restore_cache:
+          keys:
+            - deps-go-v5-{{ checksum ".task-meta-cachekey-go" }}
+            - deps-go-v5-
       - run:
           command: |-
-            export GOPATH=$(pwd)/.go
+            export GOPATH=/.go
+            export GOCACHE=/.gocache
             ./task lint-go
 workflows:
   version: 2
@@ -92,8 +101,7 @@ workflows:
             tags:
               only: /.*/
       - fetch-task:
-          requires:
-            - checkout
+          requires: []
           filters:
             tags:
               only: /.*/
