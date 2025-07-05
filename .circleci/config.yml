@@ -4,7 +4,7 @@ version: "2.1"
 jobs:
   cachekey:
     docker:
-      - image: cimg/base:2025.06
+      - image: cimg/base:2025.07
     steps:
       - attach_workspace:
           at: .
@@ -16,7 +16,7 @@ jobs:
             - ./.task-meta-cachekey*
   checkout:
     docker:
-      - image: cimg/base:2025.06
+      - image: cimg/base:2025.07
     steps:
       - checkout:
           path: .
@@ -26,7 +26,7 @@ jobs:
             - .
   ci-all:
     docker:
-      - image: cimg/base:2025.06
+      - image: cimg/base:2025.07
     steps:
       - run:
           command: echo "Done"
@@ -64,7 +64,7 @@ jobs:
             - ./task
   imgbuild-imgpush:
     docker:
-      - image: cimg/base:2025.06
+      - image: cimg/base:2025.07
     steps:
       - attach_workspace:
           at: .
