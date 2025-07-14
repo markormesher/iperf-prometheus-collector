@@ -77,7 +77,7 @@ jobs:
             ./task imgpush
   imgrefs:
     docker:
-      - image: docker.io/alpine/git:v2.49.0
+      - image: docker.io/alpine/git:v2.49.1
     steps:
       - attach_workspace:
           at: .
