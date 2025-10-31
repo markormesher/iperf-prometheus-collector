@@ -38,15 +38,15 @@ jobs:
           at: .
       - restore_cache:
           keys:
-            - deps-go-v6-{{ checksum ".task-meta-cachekey-go" }}
-            - deps-go-v6-
+            - deps-go-v7-{{ checksum ".task-meta-cachekey-go" }}
+            - deps-go-v7-
       - run:
           command: |-
             export GOPATH=/.go
             export GOCACHE=/.gocache
             ./task deps-go
       - save_cache:
-          key: deps-go-v6-{{ checksum ".task-meta-cachekey-go" }}
+          key: deps-go-v7-{{ checksum ".task-meta-cachekey-go" }}
           paths:
             - /.go
             - /.gocache
@@ -96,8 +96,8 @@ jobs:
           at: .
       - restore_cache:
           keys:
-            - deps-go-v6-{{ checksum ".task-meta-cachekey-go" }}
-            - deps-go-v6-
+            - deps-go-v7-{{ checksum ".task-meta-cachekey-go" }}
+            - deps-go-v7-
       - run:
           command: |-
             export GOPATH=/.go
