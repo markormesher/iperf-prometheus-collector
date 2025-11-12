@@ -52,7 +52,7 @@ jobs:
             - /.gocache
   fetch-task:
     docker:
-      - image: ghcr.io/markormesher/task-fetcher:v0.5.39@sha256:e7e84de8968291e0e05c531e3deea43ce1097c0158783f4e700090584d81eae8
+      - image: ghcr.io/markormesher/task-fetcher:v0.5.40@sha256:98125e171f5523554eef019e4139a1fba9fbebe6960c36416b272544354d43e7
     steps:
       - attach_workspace:
           at: .
