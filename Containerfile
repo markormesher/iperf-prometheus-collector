@@ -13,9 +13,6 @@ RUN go build -o ./build/main ./cmd/...
 FROM docker.io/debian:13.3@sha256:5cf544fad978371b3df255b61e209b373583cb88b733475c86e49faa15ac2104
 WORKDIR /app
 
-LABEL image.registry=ghcr.io
-LABEL image.name=markormesher/iperf-prometheus-collector
-
 RUN apt update \
   && apt install -y --no-install-recommends iperf3 \
   && rm -rf /var/lib/apt/lists/*
@@ -23,3 +20,12 @@ RUN apt update \
 COPY --from=builder /app/build/main /usr/local/bin/iperf-prometheus-collector
 
 CMD ["/usr/local/bin/iperf-prometheus-collector"]
+
+LABEL image.name=markormesher/iperf-prometheus-collector
+LABEL image.registry=ghcr.io
+LABEL org.opencontainers.image.description=""
+LABEL org.opencontainers.image.documentation=""
+LABEL org.opencontainers.image.title="iperf-prometheus-collector"
+LABEL org.opencontainers.image.url="https://github.com/markormesher/iperf-prometheus-collector"
+LABEL org.opencontainers.image.vendor=""
+LABEL org.opencontainers.image.version=""
