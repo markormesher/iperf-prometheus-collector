@@ -32,7 +32,7 @@ jobs:
           command: echo "Done"
   deps-go:
     docker:
-      - image: docker.io/golang:1.26.0@sha256:b39810f6440772ab1ddaf193aa0c2a2bbddebf7a877f127c113b103e48fd8139
+      - image: docker.io/golang:1.26.0@sha256:9edf71320ef8a791c4c33ec79f90496d641f306a91fb112d3d060d5c1cee4e20
     steps:
       - attach_workspace:
           at: .
@@ -90,7 +90,7 @@ jobs:
             - ./**/.task-meta-imgrefs
   lint-go:
     docker:
-      - image: docker.io/golang:1.26.0@sha256:b39810f6440772ab1ddaf193aa0c2a2bbddebf7a877f127c113b103e48fd8139
+      - image: docker.io/golang:1.26.0@sha256:9edf71320ef8a791c4c33ec79f90496d641f306a91fb112d3d060d5c1cee4e20
     steps:
       - attach_workspace:
           at: .
