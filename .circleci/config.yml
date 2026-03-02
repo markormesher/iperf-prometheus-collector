@@ -4,7 +4,7 @@ version: "2.1"
 jobs:
   cachekey:
     docker:
-      - image: cimg/base:2026.02@sha256:f333644c849b6f418f3ed937201c0d182448d7b2805d6494b04dc55b2c588f0e
+      - image: cimg/base:2026.03@sha256:fdfacc6ce19a878cdacd7af20adf2b7a6dd0c0965b453c73844409bfbe882377
     steps:
       - attach_workspace:
           at: .
@@ -16,7 +16,7 @@ jobs:
             - ./.task-meta-cachekey*
   checkout:
     docker:
-      - image: cimg/base:2026.02@sha256:f333644c849b6f418f3ed937201c0d182448d7b2805d6494b04dc55b2c588f0e
+      - image: cimg/base:2026.03@sha256:fdfacc6ce19a878cdacd7af20adf2b7a6dd0c0965b453c73844409bfbe882377
     steps:
       - checkout:
           path: .
@@ -26,7 +26,7 @@ jobs:
             - .
   ci-all:
     docker:
-      - image: cimg/base:2026.02@sha256:f333644c849b6f418f3ed937201c0d182448d7b2805d6494b04dc55b2c588f0e
+      - image: cimg/base:2026.03@sha256:fdfacc6ce19a878cdacd7af20adf2b7a6dd0c0965b453c73844409bfbe882377
     steps:
       - run:
           command: echo "Done"
@@ -64,7 +64,7 @@ jobs:
             - ./task
   imgbuild-imgpush:
     docker:
-      - image: cimg/base:2026.02@sha256:f333644c849b6f418f3ed937201c0d182448d7b2805d6494b04dc55b2c588f0e
+      - image: cimg/base:2026.03@sha256:fdfacc6ce19a878cdacd7af20adf2b7a6dd0c0965b453c73844409bfbe882377
     steps:
       - attach_workspace:
           at: .
