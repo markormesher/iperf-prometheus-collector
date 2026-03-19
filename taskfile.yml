@@ -51,6 +51,8 @@ tasks:
             exit 1
           fi
 
+          export BUILDX_GIT_INFO=0
+
           opts=(
           	-f "Containerfile"
           )
@@ -97,6 +99,8 @@ tasks:
             echo "Cannot find Podman or Docker" >&2
             exit 1
           fi
+
+          export BUILDX_GIT_INFO=0
 
           if [[ -f .task-meta-imgrefs ]]; then
             cat .task-meta-imgrefs | (grep -v "^localhost" || :) | while read tag; do
