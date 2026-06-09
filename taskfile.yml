@@ -40,41 +40,35 @@ tasks:
       - cmd: |-
           set -euo pipefail
 
-          if command -v podman >/dev/null 2>&1; then
-            # Podman for building locally or in Tatsu CI
-            builder=podman
-          elif command -v docker >/dev/null 2>&1; then
-            # Docker for building in Circle CI
-            builder=docker
-          else
-            echo "Cannot find Podman or Docker" >&2
+          if ! command -v buildah >/dev/null 2>&1; then
+            echo "Buildah is not available" >&2
             exit 1
           fi
 
-          export BUILDX_GIT_INFO=0
+          buildah_opts=()
 
-          opts=(
-          	-f "Containerfile"
-          )
-
-          # Populate args if a file exists (Podman supports --build-arg-file, but Docker does not)
-          if [[ -f argfile.conf ]]; then
-            while read arg; do
-              k=$(cut -d = -f 1 <<<"$arg")
-              v=$(cut -d = -f 2- <<<"$arg")
-              opts+=("--build-arg" "$k=$v")
-            done <<< "$(cat argfile.conf | grep -v '^#' | grep '=')"
+          if command -v fuse-overlayfs >/dev/null 2>&1; then
+            buildah_opts+=("--storage-opt" "overlay.mount_program=$(command -v fuse-overlayfs)")
           fi
 
-          # First build to get visible logs
-          $builder build "${opts[@]}" .
+          bud_opts=(
+            --layers
+            -f "Containerfile"
+          )
+
+          if [[ -f argfile.conf ]]; then
+            bud_opts+=("--build-arg-file" "argfile.conf")
+          fi
+
+          # first build to get visible logs
+          buildah "${buildah_opts[@]}" bud "${bud_opts[@]}"
 
           # Second (cached) build to get the image ID
-          img=$($builder build "${opts[@]}" -q .)
+          img=$(buildah "${buildah_opts[@]}" bud "${bud_opts[@]}" -q)
 
           if [[ -f .task-meta-imgrefs ]]; then
             cat .task-meta-imgrefs | while read tag; do
-              $builder tag "$img" "${tag}"
+              buildah "${buildah_opts[@]}" tag "$img" "${tag}"
               echo "Tagged ${tag}"
             done
           fi
@@ -89,22 +83,20 @@ tasks:
       - cmd: |-
           set -euo pipefail
 
-          if command -v podman >/dev/null 2>&1; then
-            # Podman for building locally or in Tatsu CI
-            builder=podman
-          elif command -v docker >/dev/null 2>&1; then
-            # Docker for building in Circle CI
-            builder=docker
-          else
-            echo "Cannot find Podman or Docker" >&2
+          if ! command -v buildah >/dev/null 2>&1; then
+            echo "Buildah is not available" >&2
             exit 1
           fi
 
-          export BUILDX_GIT_INFO=0
+          buildah_opts=()
+
+          if command -v fuse-overlayfs >/dev/null 2>&1; then
+            buildah_opts+=("--storage-opt" "overlay.mount_program=$(command -v fuse-overlayfs)")
+          fi
 
           if [[ -f .task-meta-imgrefs ]]; then
             cat .task-meta-imgrefs | (grep -v "^localhost" || :) | while read tag; do
-              $builder push "${tag}"
+              buildah "${buildah_opts[@]}" push "${tag}"
               echo "Pushed ${tag}"
             done
           else
