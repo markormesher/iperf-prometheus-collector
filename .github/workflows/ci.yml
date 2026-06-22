@@ -8,7 +8,7 @@ jobs:
     container:
       image: docker.io/golang:1.26.0
     steps:
-      - uses: markormesher/ci-resources/setup@v0.6.0
+      - uses: markormesher/ci-resources/setup@483c89c13fab98a3760dddba5898d696b207cd8f # v0.7.0
       - run: ./task deps-go
       - run: ./task lint-go
   ci-all:
@@ -34,7 +34,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: markormesher/ci-resources/setup@v0.6.0
+      - uses: markormesher/ci-resources/setup@483c89c13fab98a3760dddba5898d696b207cd8f # v0.7.0
       - run: buildah login ghcr.io -u "${{ github.actor }}" -p "${{ github.token }}"
       - run: ./task imgrefs
       - run: ./task imgbuild
