@@ -8,7 +8,7 @@ jobs:
     container:
       image: docker.io/golang:1.26.0
     steps:
-      - uses: markormesher/ci-resources/setup@v0.6.0
+      - uses: markormesher/ci-resources/setup@1f35cae2345536f9b1bbe3f5655538ba459883d9 # v0.6.0
       - run: ./task deps-go
       - run: ./task lint-go
   ci-all:
@@ -18,7 +18,7 @@ jobs:
       - check-go
       - img-build-push
     container:
-      image: docker.io/busybox:1.37.0
+      image: docker.io/busybox:1.37.0@sha256:9532d8c39891ca2ecde4d30d7710e01fb739c87a8b9299685c63704296b16028
     steps:
       - run: |2
           results=$(echo '${{ toJson(needs) }}' | (grep '"result"' || echo))
@@ -34,7 +34,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: markormesher/ci-resources/setup@v0.6.0
+      - uses: markormesher/ci-resources/setup@1f35cae2345536f9b1bbe3f5655538ba459883d9 # v0.6.0
       - run: buildah login ghcr.io -u "${{ github.actor }}" -p "${{ github.token }}"
       - run: ./task imgrefs
       - run: ./task imgbuild
