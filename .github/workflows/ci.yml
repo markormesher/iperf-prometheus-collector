@@ -6,7 +6,7 @@ jobs:
   check-go:
     runs-on: ubuntu-latest
     container:
-      image: docker.io/golang:1.26.5@sha256:63f132d58c1f589f0dcda584933a9bb44bfda1150f1506377f5a902f34d86033
+      image: docker.io/golang:1.26.5@sha256:079e59808d2d252516e27e3f3a9c003740dee7f75e55aa71528766d52bcfc16a
     steps:
       - uses: markormesher/ci-resources/setup@c733feb84c0204cdc0bd46f6f8ca557209bb5c33 # v0.8.0
       - run: ./task deps-go
