@@ -3,20 +3,26 @@ name: CI
 "on":
   - push
 jobs:
-  check-go:
+  check-root-go:
     runs-on: ubuntu-latest
     container:
       image: docker.io/golang:1.26.6@sha256:0d1d3a794be25f809dd2cb3160d8c73276c4056a9f8242a138e908ddeee7b6b6
     steps:
       - uses: markormesher/ci-resources/setup@c733feb84c0204cdc0bd46f6f8ca557209bb5c33 # v0.8.0
-      - run: ./task deps-go
-      - run: ./task lint-go
+      - env:
+          CI_CACHE_TOKEN: ${{ secrets.CI_CACHE_TOKEN }}
+        run: ./task -s cacheload-root-go
+      - run: ./task -s deps-root-go
+      - run: ./task -s lint-root-go
+      - env:
+          CI_CACHE_TOKEN: ${{ secrets.CI_CACHE_TOKEN }}
+        run: ./task -s cachesave-root-go
   ci-all:
     runs-on: ubuntu-latest
     if: always()
     needs:
-      - check-go
-      - img-build-push
+      - check-root-go
+      - img-root
     container:
       image: docker.io/busybox:1.38.0@sha256:dc2d74b28e4cf8984fa52af1f39bc7c3d9c73760b41a74d629f5d11b1ab28616
     steps:
@@ -27,15 +33,15 @@ jobs:
             exit 1
           fi
           echo "All jobs passed"
-  img-build-push:
+  img-root:
     runs-on: ubuntu-latest
     needs:
-      - check-go
+      - check-root-go
     permissions:
       packages: write
     steps:
       - uses: markormesher/ci-resources/setup@c733feb84c0204cdc0bd46f6f8ca557209bb5c33 # v0.8.0
       - run: buildah login ghcr.io -u "${{ github.actor }}" -p "${{ github.token }}"
-      - run: ./task imgrefs
-      - run: ./task imgbuild
-      - run: ./task imgpush
+      - run: ./task -s imgrefs-root
+      - run: ./task -s imgbuild-root
+      - run: ./task -s imgpush-root
