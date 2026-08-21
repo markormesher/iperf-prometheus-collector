@@ -1,6 +1,8 @@
 module github.com/markormesher/iperf-prometheus-collector
 
-go 1.25.3
+go 1.26.0
+
+toolchain go1.26.6
 
 tool (
 	github.com/kisielk/errcheck
