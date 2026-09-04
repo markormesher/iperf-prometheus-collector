@@ -125,7 +125,6 @@ tasks:
     dir: '{{.ROOT_DIR}}'
     cmds:
       - cmd: go mod download
-      - cmd: (go tool || true) | (grep '\.' || true) | while read t; do go build -o /dev/null $t; done
   imgbuild:
     cmds:
       - task: imgbuild-root
