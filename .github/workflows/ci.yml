@@ -8,7 +8,7 @@ jobs:
     container:
       image: docker.io/golang:1.27.1@sha256:e0174e51e81218523251d85d248a90d24c3d5e81543b4f07a5d66229397db190
     steps:
-      - uses: markormesher/ci-resources/setup@62ded02daecfff84429580ffb8539b570ec5ba5e # v0.9.0
+      - uses: markormesher/ci-resources/setup@cab6a24510515dfdc829ed2d2b1fa722a34bb00b # v0.10.0
       - env:
           CI_CACHE_TOKEN: ${{ secrets.CI_CACHE_TOKEN }}
         run: ./task -s cacheload-root-go
@@ -40,7 +40,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: markormesher/ci-resources/setup@62ded02daecfff84429580ffb8539b570ec5ba5e # v0.9.0
+      - uses: markormesher/ci-resources/setup@cab6a24510515dfdc829ed2d2b1fa722a34bb00b # v0.10.0
       - run: buildah login ghcr.io -u "${{ github.actor }}" -p "${{ github.token }}"
       - run: ./task -s imgrefs-root
       - run: ./task -s imgbuild-root
