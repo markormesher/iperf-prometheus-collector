@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.27.3@sha256:921f61120011c774a7b37fd80bd3c3d259636090d3cd002b6a344322a0328082 as builder
+FROM docker.io/golang:1.27.3@sha256:b76020929b709ddb6202afc05410a0faefae20ae05e27ad548b3870092688a69 as builder
 WORKDIR /app
 
 COPY go.mod ./
