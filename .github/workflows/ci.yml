@@ -1,4 +1,5 @@
 # This file is maintained by Tedium - manual edits will be overwritten!
+---
 name: CI
 "on":
   - push
@@ -26,7 +27,7 @@ jobs:
     container:
       image: docker.io/busybox:1.38.0@sha256:a46257e06c82ad85242d0d38077d0a52d9896389ca60a1a59d3463db586e5fa4
     steps:
-      - run: |2
+      - run: |-
           results=$(echo '${{ toJson(needs) }}' | (grep '"result"' || echo))
           if echo "$results" | grep -q "failure\|cancelled\|skipped"; then
             echo "One or more jobs failed, were cancelled, or were skipped" >&2

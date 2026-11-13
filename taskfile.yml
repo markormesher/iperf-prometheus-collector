@@ -1,5 +1,6 @@
 # This file is maintained by Tedium - manual edits will be overwritten!
 
+---
 version: "3"
 includes:
   local:
@@ -13,7 +14,7 @@ tasks:
     cmds:
       - task: cachekey-root-go
   cachekey-root-go:
-    dir: '{{.ROOT_DIR}}'
+    dir: "{{.ROOT_DIR}}"
     generates:
       - .task-meta-cache-key
     cmds:
@@ -44,7 +45,7 @@ tasks:
     cmds:
       - task: cacheload-root-go
   cacheload-root-go:
-    dir: '{{.ROOT_DIR}}'
+    dir: "{{.ROOT_DIR}}"
     deps:
       - cachekey-root-go
     cmds:
@@ -84,7 +85,7 @@ tasks:
     cmds:
       - task: cachesave-root-go
   cachesave-root-go:
-    dir: '{{.ROOT_DIR}}'
+    dir: "{{.ROOT_DIR}}"
     deps:
       - cachekey-root-go
     cmds:
@@ -122,14 +123,14 @@ tasks:
     cmds:
       - task: deps-root-go
   deps-root-go:
-    dir: '{{.ROOT_DIR}}'
+    dir: "{{.ROOT_DIR}}"
     cmds:
       - cmd: go mod download
   imgbuild:
     cmds:
       - task: imgbuild-root
   imgbuild-root:
-    dir: '{{.ROOT_DIR}}'
+    dir: "{{.ROOT_DIR}}"
     deps:
       - imgrefs-root
     cmds:
@@ -172,7 +173,7 @@ tasks:
     cmds:
       - task: imgpush-root
   imgpush-root:
-    dir: '{{.ROOT_DIR}}'
+    dir: "{{.ROOT_DIR}}"
     deps:
       - imgrefs-root
     cmds:
@@ -203,7 +204,7 @@ tasks:
     cmds:
       - task: imgrefs-root
   imgrefs-root:
-    dir: '{{.ROOT_DIR}}'
+    dir: "{{.ROOT_DIR}}"
     cmds:
       - cmd: |-
           set -euo pipefail
@@ -267,7 +268,7 @@ tasks:
     cmds:
       - task: lint-root-go
   lint-root-go:
-    dir: '{{.ROOT_DIR}}'
+    dir: "{{.ROOT_DIR}}"
     cmds:
       - cmd: |-
           exit_code=0
@@ -308,6 +309,6 @@ tasks:
     cmds:
       - task: lintfix-root-go
   lintfix-root-go:
-    dir: '{{.ROOT_DIR}}'
+    dir: "{{.ROOT_DIR}}"
     cmds:
       - cmd: gofmt -s -w .
