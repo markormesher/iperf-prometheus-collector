@@ -7,7 +7,7 @@ jobs:
   check-root-go:
     runs-on: ubuntu-latest
     container:
-      image: docker.io/golang:1.27.4@sha256:5e8afd493a7124a8586e134d9b532731161d4b9becf9dee5a5956b107426f93d
+      image: docker.io/golang:1.27.4@sha256:fe517acaa580cc7915457080f850c37e618b3c1e750f98b58fc6429b605147a1
     steps:
       - uses: markormesher/ci-resources/setup@cab6a24510515dfdc829ed2d2b1fa722a34bb00b # v0.10.0
       - env:
